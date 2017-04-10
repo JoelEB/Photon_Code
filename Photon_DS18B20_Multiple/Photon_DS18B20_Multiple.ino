@@ -48,46 +48,12 @@ void printMenu(void)
   Serial.println("\n\nOpenponics Config");
   Serial.println("===========================");
   Serial.println("s   Scan for One Wire Devices");
-  Serial.println("t   Print Temperature");
   Serial.println("c   One Wire device count");
-  Serial.println("a   Set Device address by index");
+  Serial.println("a   Set Device addresses by index");
+  Serial.println("g   Get Device addresses by index");
   Serial.println("r   Set Resolution");
   Serial.println("i   Get All Device Info");
   Serial.println("Send me a command letter.");
-}
-//-----------------------------------------------------------
-void printInfo()
-{
-  Serial.print("TempF: ");
-  Serial.print(tempF);
-  Serial.println();
-
-  oled.clear(PAGE);
-  oled.setCursor(0,0);
-  oled.print("TempF:");
-  oled.print(tempF);
-
-  oled.display();
-}
-//-----------------------------------------------------------
-void getTemp()
-{
-  sensors.requestTemperatures();
-  //This next line assigns the current temp to the 'Check variable'
-  tempCheck = sensors.getTempCByIndex(0);
-  //This statement checks to see if the temp is less than -50 deg C - I selected -50C as the sensor for me isn't going to get that cold
-  //You can select a different minimum temp, I avoided setting it to -127 as I wasn't sure if there were rounding or decimal issues which I didn't bother checking for
-  if ( tempCheck < -50 )
-  {
-      //The below statement leaves tempC as is if the sensor reports < -50C
-      tempC = tempC;
-      delay(1000);
-  }
-  else
-  {
-    tempC = tempCheck;
-    tempF = tempC * 9.0 / 5.0 + 32.0;
-  }
 }
 //-----------------------------------------------------------
 void getTempByIndex()
@@ -173,11 +139,6 @@ void deviceCount()
   Serial.print("Found ");
   Serial.print(sensors.getDeviceCount(), DEC);
   Serial.println(" devices.");
-
-  // report parasite power requirements
-  Serial.print("Parasite power is: ");
-  if (sensors.isParasitePowerMode()) Serial.println("ON");
-  else Serial.println("OFF");
 }
 //-------------------------------------------
 // function to print a device address
@@ -208,14 +169,20 @@ void setDeviceAddressByIndex()
 //-------------------------------------------
 void getDeviceAddressByIndex()
 {
-  // show the addresses we found on the bus
-  Serial.print("Device 0 Address: ");
-  printAddress(tempSensor1);
-  Serial.println();
+  int x = sensors.getDeviceCount();
+  for(i=0; i <= x; i++)
+  {
+    // show the addresses we found on the bus
+    Serial.print("Device ");
+    Serial.print(i, DEC);
+    Serial.prin("Address: ");
+    printAddress();
+    Serial.println();
 
-  Serial.print("Device 1 Address: ");
-  printAddress(tempSensor2);
-  Serial.println();
+    Serial.print("Device 1 Address: ");
+    printAddress(tempSensor2);
+    Serial.println();
+  }
 }
 //-------------------------------------------
 // function to print the temperature for a device
